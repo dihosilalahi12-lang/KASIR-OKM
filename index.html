@@ -113,9 +113,44 @@ main{margin-left:66px;padding:10px 8px 0}.page{min-height:calc(100vh - 95px)}.we
 .dashboard-bottom{padding:7px 9px;margin:9px -8px 0}.bottom-brand{font-size:13px}.bottom-brand i{font-size:11px;margin-left:4px}.bottom-motto{font-size:10px}.bottom-motto small{font-size:8px}
 .dash-lower{grid-template-columns:1fr}.checkout{grid-template-columns:1fr}
 }
+
+/* DIHO motion & feature art */
+@media(prefers-reduced-motion:no-preference){
+ .topbar{background-size:200% 200%;animation:diho-gradient 9s ease infinite}
+ .robin-stage img{animation:mascot-float 5s ease-in-out infinite;transform-origin:50% 75%}
+ .robin-caption{animation:caption-in .8s cubic-bezier(.2,.8,.2,1) both}
+ .summary-card,.scan-panel,.card,.product,.quick-actions button{transition:transform .25s,box-shadow .25s,border-color .25s}
+ .summary-card:hover,.card:hover{transform:translateY(-3px);box-shadow:0 12px 28px #064b3920}
+ .quick-actions button:hover,.product:hover{transform:translateY(-4px) scale(1.015);box-shadow:0 9px 20px #064b3925}
+ .page.active{animation:page-enter .38s cubic-bezier(.2,.8,.2,1) both}
+}
+@keyframes diho-gradient{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes mascot-float{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-7px) scale(1.012)}}
+@keyframes caption-in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes page-enter{from{opacity:.25;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes feature-glow{0%,100%{filter:drop-shadow(0 0 0 #7be0a000)}50%{filter:drop-shadow(0 0 12px #7be0a0aa)}}
+@keyframes ripple-out{to{transform:scale(18);opacity:0}}
+@keyframes success-bounce{0%,100%{transform:scale(1)}35%{transform:scale(1.025)}65%{transform:scale(.99)}}
+.feature-visual{position:relative;display:flex;align-items:center;gap:15px;overflow:hidden;margin:0 0 15px;padding:15px 20px;border-radius:18px;border:1px solid #b8dcca;background:linear-gradient(110deg,#fafffc,#e0f5e9);color:#064b39;min-height:96px}
+.feature-visual:before,.feature-visual:after{content:"";position:absolute;border-radius:50%;pointer-events:none}
+.feature-visual:before{width:150px;height:150px;right:8%;top:-85px;background:#76dba755}
+.feature-visual:after{width:90px;height:90px;right:22%;bottom:-65px;background:#48a9dc33}
+.feature-art{width:66px;height:66px;flex:0 0 66px;display:grid;place-items:center;border-radius:19px;background:linear-gradient(145deg,#087448,#21bd75);font-size:36px;box-shadow:0 7px 18px #064b3925;animation:feature-glow 4s ease-in-out infinite}
+.feature-visual h2{margin:0;font-size:clamp(18px,2.5vw,25px)}
+.feature-visual p{margin:4px 0 0;color:#547467;font-size:13px}
+.feature-visual .feature-orbit{position:absolute;right:18px;font-size:48px;opacity:.25;transform:rotate(-12deg)}
+.sound-control{display:inline-flex;align-items:center;gap:7px;border:1px solid #b6d5c4;background:#f7fffa;color:#064b39;border-radius:24px;padding:8px 12px;font-weight:750}
+.sound-control[aria-pressed="false"]{background:#f1f3f2;color:#65756d}
+.fx-toast{position:fixed;z-index:99;left:50%;bottom:24px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#064b39;color:white;padding:12px 18px;border-radius:30px;box-shadow:0 8px 30px #002e2540;font-weight:750;transition:opacity .25s,transform .25s}
+.fx-toast.show{opacity:1;transform:translate(-50%,0)}
+.fx-ripple{position:fixed;z-index:90;pointer-events:none;border-radius:50%;width:12px;height:12px;background:#48d78b88;transform:scale(0);animation:ripple-out .55s ease-out forwards}
+.fx-success{animation:success-bounce .6s ease}
+@media(max-width:600px){.feature-visual{padding:11px 12px;min-height:78px;gap:10px}.feature-art{width:52px;height:52px;flex-basis:52px;font-size:29px;border-radius:15px}.feature-visual .feature-orbit{right:8px;font-size:36px}.feature-visual p{font-size:11px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+
 </style></head>
 <body>
-<header class="topbar"><div class="brand-lockup"><span class="brand-cart">🛒</span><div><b>DIHO <strong>KASIR PRO</strong></b><small>Kasir • Stok Barang • Kupang</small></div></div><div class="onepiece-logo">☠ <span>ONE PIECE</span> ☠</div><div class="admin-box"><span class="avatar">●</span><div><b>DIHO KUPANG</b><small>Admin</small></div><button class="settings-shortcut" data-page="pengaturan">⚙</button></div></header>
+<header class="topbar"><div class="brand-lockup"><span class="brand-cart">🛒</span><div><b>DIHO <strong>KASIR PRO</strong></b><small>Kasir • Stok Barang • Kupang</small></div></div><div class="onepiece-logo">☠ <span>ONE PIECE</span> ☠</div><div class="admin-box"><button id="soundToggle" class="sound-control" type="button" aria-pressed="true" title="Aktif/nonaktifkan suara">🔊 Suara</button><span class="avatar">●</span><div><b>DIHO KUPANG</b><small>Admin</small></div><button class="settings-shortcut" data-page="pengaturan">⚙</button></div></header>
 <nav class="sidebar no-print" id="nav">
 <button class="active" data-page="dashboard"><span>⌂</span>Beranda</button><button data-page="produk"><span>⬡</span>Barang</button><button data-page="kasir"><span>🛒</span>Transaksi</button><button data-page="laporan"><span>▥</span>Laporan</button><button data-page="pengaturan"><span>▤</span>Database</button><button data-page="pengaturan"><span>⚙</span>Pengaturan</button>
 </nav>
@@ -154,13 +189,13 @@ main{margin-left:66px;padding:10px 8px 0}.page{min-height:calc(100vh - 95px)}.we
 <div class="grid dash-lower"><div class="card"><h3>Transaksi terbaru</h3><div id="recent"></div></div><div class="card"><h3>Pengingat stok menipis</h3><div id="lowList"></div><div class="muted">Stok menipis: <b id="dLow">0</b> produk</div></div></div>
 <input id="scan" class="hidden" autocomplete="off"><button id="addScan" class="hidden" type="button">Tambah</button>
 </section>
-<section class="page" id="kasir"><h2>Keranjang & Pembayaran</h2><div class="checkout"><div class="card"><h3>Keranjang</h3><div id="cart"><div class="empty">Belum ada barang</div></div><div class="row" style="margin-top:12px"><span class="muted">Subtotal</span><b id="subtotal">Rp0</b></div>
+<section class="page" id="kasir"><section class="feature-visual" aria-label="Kasir & Pembayaran"><span class="feature-art" aria-hidden="true">🛒</span><div><h2>Kasir & Pembayaran</h2><p>Efek kasir: bunyi klik, penambahan barang, dan nada transaksi.</p></div><span class="feature-orbit" aria-hidden="true">🛒</span></section><h2>Keranjang & Pembayaran</h2><div class="checkout"><div class="card"><h3>Keranjang</h3><div id="cart"><div class="empty">Belum ada barang</div></div><div class="row" style="margin-top:12px"><span class="muted">Subtotal</span><b id="subtotal">Rp0</b></div>
 <label>Diskon transaksi (Rp)</label><input id="discount" type="number" min="0" value="0"><div class="row" style="margin:12px 0"><span>Total</span><span class="total" id="grandTotal">Rp0</span></div>
 <label>Metode pembayaran</label><select id="payMethod"><option>Tunai</option><option>QRIS (konfirmasi manual)</option><option>Transfer</option><option>Kartu</option></select>
 <label>Uang diterima (Rp)</label><input id="paid" type="number" min="0" placeholder="Masukkan nominal pembayaran"><div class="row" style="margin:8px 0"><span class="muted">Kembalian</span><b id="change">Rp0</b></div>
 <button class="primary" id="checkoutBtn" style="width:100%">Selesaikan transaksi</button><p class="muted">Untuk QRIS/transfer/kartu, pastikan pembayaran benar-benar diterima sebelum menyelesaikan transaksi.</p>
 </div></div></section>
-<section class="page" id="produk">
+<section class="page" id="produk"><section class="feature-visual" aria-label="Barang & Stok"><span class="feature-art" aria-hidden="true">📦</span><div><h2>Barang & Stok</h2><p>Kelola katalog dengan visual khusus dan animasi interaktif.</p></div><span class="feature-orbit" aria-hidden="true">📦</span></section>
 <h2>Produk & stok</h2><div class="card"><h3>Tambah / edit produk</h3><input id="editId" type="hidden"><div class="grid">
 <div><label>Nama barang *</label><input id="pName" placeholder="Contoh: Air mineral 600 ml"></div>
 <div><label>UPC</label><input id="pUpc" placeholder="Contoh: 0000089"></div>
@@ -175,15 +210,15 @@ main{margin-left:66px;padding:10px 8px 0}.page{min-height:calc(100vh - 95px)}.we
 </div><div class="row" style="margin-top:12px"><button class="primary" id="saveProduct">Simpan produk</button><button class="secondary" id="resetProduct">Kosongkan</button></div></div>
 <div class="card" style="margin-top:14px"><div class="row"><h3 style="flex:1">Daftar barang</h3><input id="productFilter" placeholder="Cari nama / UPC / barcode" style="max-width:300px"></div><div class="tablewrap"><table><thead><tr><th>Barang</th><th>UPC</th><th>Barcode</th><th>Harga jual</th><th>Stok</th><th>Aksi</th></tr></thead><tbody id="productRows"></tbody></table></div></div>
 </section>
-<section class="page" id="transaksi"><h2>Riwayat transaksi</h2><div class="card"><div class="toolbar"><input id="txSearch" placeholder="Cari nomor transaksi"><input id="txDate" type="date"></div><div class="tablewrap"><table><thead><tr><th>No. transaksi</th><th>Tanggal</th><th>Metode</th><th>Total</th><th>Aksi</th></tr></thead><tbody id="txRows"></tbody></table></div></div></section>
-<section class="page" id="laporan"><h2>Laporan penjualan</h2><div class="toolbar"><input type="date" id="reportFrom"><input type="date" id="reportTo"><button class="primary" id="runReport">Tampilkan</button><button class="secondary" id="exportCsv">Ekspor CSV</button></div><div class="grid"><div class="card"><div class="muted">Omzet periode</div><div class="stat" id="rSales">Rp0</div></div><div class="card"><div class="muted">Estimasi laba kotor</div><div class="stat" id="rProfit">Rp0</div></div><div class="card"><div class="muted">Jumlah transaksi</div><div class="stat" id="rCount">0</div></div></div><div class="card" style="margin-top:14px"><h3>Ringkasan produk terjual</h3><div id="topProducts"></div></div></section>
-<section class="page" id="pengaturan"><h2>Pengaturan & database</h2><div class="grid">
+<section class="page" id="transaksi"><section class="feature-visual" aria-label="Riwayat Transaksi"><span class="feature-art" aria-hidden="true">🧾</span><div><h2>Riwayat Transaksi</h2><p>Tinjau transaksi dengan efek navigasi yang lembut.</p></div><span class="feature-orbit" aria-hidden="true">🧾</span></section><h2>Riwayat transaksi</h2><div class="card"><div class="toolbar"><input id="txSearch" placeholder="Cari nomor transaksi"><input id="txDate" type="date"></div><div class="tablewrap"><table><thead><tr><th>No. transaksi</th><th>Tanggal</th><th>Metode</th><th>Total</th><th>Aksi</th></tr></thead><tbody id="txRows"></tbody></table></div></div></section>
+<section class="page" id="laporan"><section class="feature-visual" aria-label="Laporan Penjualan"><span class="feature-art" aria-hidden="true">📊</span><div><h2>Laporan Penjualan</h2><p>Ringkasan penjualan dengan aksen visual analitik.</p></div><span class="feature-orbit" aria-hidden="true">📊</span></section><h2>Laporan penjualan</h2><div class="toolbar"><input type="date" id="reportFrom"><input type="date" id="reportTo"><button class="primary" id="runReport">Tampilkan</button><button class="secondary" id="exportCsv">Ekspor CSV</button></div><div class="grid"><div class="card"><div class="muted">Omzet periode</div><div class="stat" id="rSales">Rp0</div></div><div class="card"><div class="muted">Estimasi laba kotor</div><div class="stat" id="rProfit">Rp0</div></div><div class="card"><div class="muted">Jumlah transaksi</div><div class="stat" id="rCount">0</div></div></div><div class="card" style="margin-top:14px"><h3>Ringkasan produk terjual</h3><div id="topProducts"></div></div></section>
+<section class="page" id="pengaturan"><section class="feature-visual" aria-label="Pengaturan & Database"><span class="feature-art" aria-hidden="true">⚙️</span><div><h2>Pengaturan & Database</h2><p>Kelola data, backup, dan preferensi aplikasi.</p></div><span class="feature-orbit" aria-hidden="true">⚙️</span></section><h2>Pengaturan & database</h2><div class="grid">
 <div class="card"><h3>Identitas toko</h3><label>Nama toko</label><input id="storeName" value="DIHO KASIR KUPANG"><label>Alamat / keterangan struk</label><input id="storeAddress" placeholder="Alamat toko"><button class="primary" id="saveSettings" style="margin-top:12px">Simpan identitas</button></div>
 <div class="card"><h3>Backup & pemulihan</h3><p class="muted">Simpan salinan data produk dan transaksi ke file JSON. Simpan backup secara berkala.</p><button class="primary" id="backupBtn">Unduh backup JSON</button><label>Pulihkan dari backup JSON</label><input type="file" id="restoreFile" accept=".json,application/json"><button class="secondary" id="restoreBtn" style="margin-top:8px">Pulihkan data</button></div>
 <div class="card"><h3>Sinkronisasi online</h3><p class="muted">Versi ini bekerja offline-first. Untuk sinkronisasi antar-HP/komputer, hubungkan backend database bersama (misalnya Supabase/Firebase) dan atur kredensial proyek.</p><div class="notice">Data saat ini tersimpan di perangkat ini. Backup/restore dapat memindahkan data antarperangkat, tetapi belum melakukan sinkronisasi otomatis.</div></div>
 <div class="card"><h3>Data awal demo</h3><p class="muted">Isi contoh produk agar bisa mencoba alur kasir.</p><button class="secondary" id="demoBtn">Tambahkan produk contoh</button><button class="danger" id="clearBtn" style="margin:8px 0 0 8px">Hapus semua data</button></div>
 </div></section>
 <section id="receiptPrint" class="hidden"></section>
-</main><footer>DIHO KASIR KUPANG • Simpan backup data secara berkala</footer>
+</main><footer>DIHO KASIR KUPANG • Simpan backup data secara berkala</footer><div id="fxToast" class="fx-toast" role="status" aria-live="polite"></div>
 <script src="app.js"></script>
 </body></html>

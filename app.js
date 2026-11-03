@@ -104,4 +104,42 @@ $('stopCameraBtn').addEventListener('click',stopBarcodeCamera);
 if($('cameraCloseText'))$('cameraCloseText').addEventListener('click',stopBarcodeCamera);
 document.addEventListener('visibilitychange',()=>{if(document.hidden && barcodeRunning)stopBarcodeCamera()});
 
+
+// DIHO feature-specific animation + synthesized sound effects (no external audio files).
+const soundPref = localStorage.getItem('diho_sound_enabled');
+let soundEnabled = soundPref !== 'false';
+const soundButton = $('soundToggle');
+function syncSoundButton(){if(!soundButton)return;soundButton.setAttribute('aria-pressed',String(soundEnabled));soundButton.textContent=soundEnabled?'🔊 Suara':'🔇 Suara mati'}
+syncSoundButton();
+soundButton?.addEventListener('click',()=>{soundEnabled=!soundEnabled;localStorage.setItem('diho_sound_enabled',String(soundEnabled));syncSoundButton();if(soundEnabled)playTone('toggle')});
+function playTone(kind='click'){
+ if(!soundEnabled)return;
+ try{
+  const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+  const ctx=new AC(), now=ctx.currentTime;
+  const notes=kind==='success'?[660,880,1175]:kind==='scan'?[1050,1450]:kind==='error'?[220,165]:kind==='toggle'?[740]:[kind==='add'?520:430];
+  notes.forEach((freq,i)=>{const osc=ctx.createOscillator(),gain=ctx.createGain();osc.type=kind==='success'?'sine':'triangle';osc.frequency.setValueAtTime(freq,now+i*.09);gain.gain.setValueAtTime(.0001,now+i*.09);gain.gain.exponentialRampToValueAtTime(kind==='success'?.12:.065,now+i*.09+.012);gain.gain.exponentialRampToValueAtTime(.0001,now+i*.09+.13);osc.connect(gain);gain.connect(ctx.destination);osc.start(now+i*.09);osc.stop(now+i*.09+.14);});
+  setTimeout(()=>ctx.close().catch(()=>{}),650);
+ }catch(e){}
+}
+let toastTimer;
+function fxToast(message){const t=$('fxToast');if(!t)return;t.textContent=message;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),1800)}
+function fxRipple(el){if(!el||matchMedia('(prefers-reduced-motion: reduce)').matches)return;const r=el.getBoundingClientRect(),node=document.createElement('span');node.className='fx-ripple';node.style.left=(r.left+r.width/2-6)+'px';node.style.top=(r.top+r.height/2-6)+'px';document.body.appendChild(node);setTimeout(()=>node.remove(),600)}
+document.addEventListener('click',e=>{
+ const b=e.target.closest('button');if(!b)return;
+ if(b.id==='soundToggle')return;
+ fxRipple(b);
+ if(b.id==='checkoutBtn')return;
+ if(b.id==='addUPC'||b.id==='addBarcode'||b.id==='cameraScanBtn')playTone('scan');
+ else if(b.id==='saveProduct'||b.id==='backupBtn'||b.id==='restoreBtn'||b.id==='saveSettings')playTone('success');
+ else playTone('click');
+});
+const originalAddToCart=addToCart;
+addToCart=function(p){if(p){playTone('add');fxToast('🛍️ '+p.name+' ditambahkan');}return originalAddToCart(p)};
+const originalPage=page;
+page=function(id){originalPage(id);const labels={dashboard:'Beranda',produk:'Barang & Stok',kasir:'Kasir',transaksi:'Riwayat transaksi',laporan:'Laporan',pengaturan:'Pengaturan'};if(labels[id])fxToast('✨ '+labels[id]);};
+window.page=page;
+const originalCheckout=$('checkoutBtn').onclick;
+$('checkoutBtn').onclick=function(){const before=transactions.length;originalCheckout();if(transactions.length>before){playTone('success');$('kasir').classList.add('fx-success');setTimeout(()=>$('kasir').classList.remove('fx-success'),650);fxToast('🎉 Transaksi berhasil!')}};
+
 })();
