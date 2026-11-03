@@ -142,4 +142,97 @@ window.page=page;
 const originalCheckout=$('checkoutBtn').onclick;
 $('checkoutBtn').onclick=function(){const before=transactions.length;originalCheckout();if(transactions.length>before){playTone('success');$('kasir').classList.add('fx-success');setTimeout(()=>$('kasir').classList.remove('fx-success'),650);fxToast('🎉 Transaksi berhasil!')}};
 
+
+// Pemindai kamera khusus formulir Barang & Stok.
+// Hasil scan mengisi UPC atau Barcode; tidak mengubah alur scan kasir.
+let productCameraStream = null;
+let productCameraRunning = false;
+let productCameraFrame = null;
+let productCameraDetector = null;
+let productScanTarget = 'pUpc';
+
+async function stopProductCamera(){
+  productCameraRunning = false;
+  if(productCameraFrame) cancelAnimationFrame(productCameraFrame);
+  productCameraFrame = null;
+  if(productCameraStream){
+    productCameraStream.getTracks().forEach(track => track.stop());
+    productCameraStream = null;
+  }
+  const video = $('productBarcodeVideo');
+  if(video) video.srcObject = null;
+  $('productCameraPanel').classList.add('hidden');
+}
+
+async function startProductCamera(target){
+  productScanTarget = target;
+  if(!('BarcodeDetector' in window)){
+    alert('Pemindai kamera belum didukung browser ini. Gunakan Chrome Android terbaru atau scanner Bluetooth/USB.');
+    return;
+  }
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    alert('Kamera memerlukan koneksi HTTPS. Buka DIHO melalui alamat GitHub Pages HTTPS.');
+    return;
+  }
+  try{
+    const formats = ['ean_13','ean_8','upc_a','upc_e','code_128','code_39','itf','codabar'];
+    let supported = formats;
+    if(BarcodeDetector.getSupportedFormats){
+      const available = await BarcodeDetector.getSupportedFormats();
+      supported = formats.filter(format => available.includes(format));
+    }
+    if(!supported.length){
+      alert('Browser tidak mendukung format barcode yang umum.');
+      return;
+    }
+    productCameraDetector = new BarcodeDetector({formats:supported});
+    productCameraStream = await navigator.mediaDevices.getUserMedia({
+      audio:false,
+      video:{facingMode:{ideal:'environment'}}
+    });
+    const video = $('productBarcodeVideo');
+    video.srcObject = productCameraStream;
+    $('productCameraPanel').classList.remove('hidden');
+    $('productCameraStatus').textContent =
+      'Arahkan barcode ke kamera untuk mengisi ' +
+      (target === 'pUpc' ? 'kolom UPC.' : 'kolom Barcode.');
+    await video.play();
+    productCameraRunning = true;
+
+    const scanProductFrame = async () => {
+      if(!productCameraRunning) return;
+      try{
+        if(video.readyState >= 2){
+          const results = await productCameraDetector.detect(video);
+          if(results && results.length && results[0].rawValue){
+            const value = results[0].rawValue.trim();
+            $(productScanTarget).value = value;
+            if(typeof scanBeep === 'function') scanBeep();
+            $('productCameraStatus').textContent = 'Berhasil membaca: ' + value;
+            await stopProductCamera();
+            const field = $(productScanTarget);
+            field.focus();
+            fxToast('✓ Kode barcode berhasil diisi');
+            return;
+          }
+        }
+      }catch(error){}
+      if(productCameraRunning){
+        productCameraFrame = requestAnimationFrame(scanProductFrame);
+      }
+    };
+    scanProductFrame();
+  }catch(error){
+    await stopProductCamera();
+    alert('Tidak bisa membuka kamera. Izinkan akses kamera untuk Chrome dan pastikan kamera tidak sedang digunakan aplikasi lain.');
+  }
+}
+
+$('productScanUPC').addEventListener('click', () => startProductCamera('pUpc'));
+$('productScanBarcode').addEventListener('click', () => startProductCamera('pBarcode'));
+$('productCameraStop').addEventListener('click', stopProductCamera);
+document.addEventListener('visibilitychange', () => {
+  if(document.hidden && productCameraRunning) stopProductCamera();
+});
+
 })();
